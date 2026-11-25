@@ -94,7 +94,7 @@ jobs:
         run: |
           set -euo pipefail
           version="$(sed -n 's/^\/\/ @version[[:space:]]*//p' LDStatusPro.user.js | head -1 | tr -d '\r')"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(-Jayczee)?$ ]]; then
             echo "Invalid @version: ${version:-'(empty)'}"
             exit 1
           fi

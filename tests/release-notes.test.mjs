@@ -20,6 +20,7 @@ test('readUserscriptVersion reads the metadata header', () => {
 test('isReleaseVersion accepts dotted product versions', () => {
     assert.equal(isReleaseVersion('3.9.0.6'), true);
     assert.equal(isReleaseVersion('3.9.0'), true);
+    assert.equal(isReleaseVersion('3.9.0.16-Jayczee'), true);
     assert.equal(isReleaseVersion('v3.9.0.6'), false);
     assert.equal(isReleaseVersion('3.9.0.6-beta'), false);
 });

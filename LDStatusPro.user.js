@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         LDStatus Pro
 // @namespace    http://tampermonkey.net/
-// @version      3.9.0.15
+// @version      3.9.0.16-Jayczee
 // @description  在 Linux.do 和 IDCFlare 页面显示信任级别进度，支持历史趋势、里程碑通知、阅读时间统计、排行榜系统、我的活动查看。两站点均支持排行榜和云同步功能
-// @author       JackLiii
+// @author       Jayczee
 // @license      MIT
 // @match        https://linux.do/*
 // @match        https://idcflare.com/*
@@ -39,6 +39,7 @@
 // @downloadURL  https://raw.githubusercontent.com/Jayczee/LDStatusPro/feat/topic-reply-reader/LDStatusPro.user.js
 // @icon         https://img.ldstore.cc.cd/JackyLiii/20260424_logo-new-5_0vbj4s.png
 // ==/UserScript==
+// Original LDStatus Pro by JackLiii (https://github.com/caigg188/LDStatusPro).
 
     (function() {
         'use strict';
@@ -598,7 +599,7 @@
             USERNAME: /\/u\/([^/]+)/,
             TRUST_LEVEL: /(.*) - 信任级别 (\d+)/,
             TRUST_LEVEL_H1: /你好，.*?\(([^)]+)\)\s*(\d+)级用户/,  // 匹配 h1 中的 "你好，XX (username) X级用户"
-            VERSION: /@version\s+([\d.]+)/,
+            VERSION: /^\/\/ @version[ \t]+(\d+(?:\.\d+){2,3}(?:-Jayczee)?)[ \t]*\r?$/m,
             AVATAR_SIZE: /\/\d+\//,
             NUMBER: /(\d+)/
         };
@@ -711,7 +712,7 @@
             // 版本比较
             compareVersion(v1, v2) {
                 if (!v1 || !v2) return 0;
-                const [p1, p2] = [v1, v2].map(v => String(v).split('.').map(n => this.toSafeInt(n)));
+                const [p1, p2] = [v1, v2].map(v => String(v).replace(/-Jayczee$/, '').split('.').map(n => this.toSafeInt(n)));
                 const len = Math.max(p1.length, p2.length);
                 for (let i = 0; i < len; i++) {
                     const diff = (p1[i] || 0) - (p2[i] || 0);

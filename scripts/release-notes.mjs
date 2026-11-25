@@ -11,7 +11,7 @@ export function readUserscriptVersion(src) {
 }
 
 export function isReleaseVersion(version) {
-    return /^\d+\.\d+\.\d+(?:\.\d+)?$/.test(version);
+    return /^\d+\.\d+\.\d+(?:\.\d+)?(?:-Jayczee)?$/.test(version);
 }
 
 export function extractReadmeNotes(readme, version) {
