@@ -42,9 +42,9 @@ test('buildReleaseBody includes install link and changelog', () => {
     const body = buildReleaseBody({
         version: '3.9.0.6',
         notes: '- harden bridges',
-        repository: 'caigg188/LDStatusPro'
+        repository: 'Jayczee/LDStatusPro'
     });
     assert.match(body, /v3\.9\.0\.6 更新内容/);
     assert.match(body, /- harden bridges/);
-    assert.match(body, /raw\.githubusercontent\.com\/caigg188\/LDStatusPro\/main\/LDStatusPro\.user\.js/);
+    assert.match(body, /raw\.githubusercontent\.com\/Jayczee\/LDStatusPro\/v3\.9\.0\.6\/LDStatusPro\.user\.js/);
 });

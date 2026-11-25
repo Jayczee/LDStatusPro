@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LDStatus Pro
 // @namespace    http://tampermonkey.net/
-// @version      3.9.0.16-Jayczee
+// @version      3.9.0.17-Jayczee
 // @description  在 Linux.do 和 IDCFlare 页面显示信任级别进度，支持历史趋势、里程碑通知、阅读时间统计、排行榜系统、我的活动查看。两站点均支持排行榜和云同步功能
 // @author       Jayczee
 // @license      MIT
@@ -35,8 +35,8 @@
 // @connect      localhost
 // @connect      127.0.0.1
 // @connect      *
-// @updateURL    https://raw.githubusercontent.com/Jayczee/LDStatusPro/feat/topic-reply-reader/LDStatusPro.user.js
-// @downloadURL  https://raw.githubusercontent.com/Jayczee/LDStatusPro/feat/topic-reply-reader/LDStatusPro.user.js
+// @updateURL    https://raw.githubusercontent.com/Jayczee/LDStatusPro/main/LDStatusPro.user.js
+// @downloadURL  https://raw.githubusercontent.com/Jayczee/LDStatusPro/main/LDStatusPro.user.js
 // @icon         https://img.ldstore.cc.cd/JackyLiii/20260424_logo-new-5_0vbj4s.png
 // ==/UserScript==
 // Original LDStatus Pro by JackLiii (https://github.com/caigg188/LDStatusPro).
@@ -16306,7 +16306,7 @@ a:hover{text-decoration:underline;}
             }
 
             async _checkUpdate(autoCheck = false) {
-                const url = 'https://raw.githubusercontent.com/Jayczee/LDStatusPro/feat/topic-reply-reader/LDStatusPro.user.js';
+                const url = 'https://raw.githubusercontent.com/Jayczee/LDStatusPro/main/LDStatusPro.user.js';
                 this.$.btnUpdate.textContent = '⏳';
 
                 try {
@@ -16401,7 +16401,7 @@ a:hover{text-decoration:underline;}
                 this.$.updateBubbleBtn.textContent = I18n.t('panel.updateBubble.updating');
                 
                 // 打开更新链接，Tampermonkey 会自动弹出更新确认
-                window.open(this._updateUrl || 'https://raw.githubusercontent.com/Jayczee/LDStatusPro/feat/topic-reply-reader/LDStatusPro.user.js');
+                window.open(this._updateUrl || 'https://raw.githubusercontent.com/Jayczee/LDStatusPro/main/LDStatusPro.user.js');
                 
                 // 提示用户
                 setTimeout(() => {

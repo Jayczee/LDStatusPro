@@ -1,5 +1,7 @@
 # LDSP 项目约定
 
+Jayczee fork 的功能交付到 `main`。发布新脚本版本时递增带 `-Jayczee` 后缀的版本号，将 `LDStatusPro.user.js` 作为 Release 附件，并在发布说明提供该标签的一键安装链接。
+
 ## 分支命名与生命周期
 
 - `main` 是稳定分支。新工作从最新 `origin/main` 创建短期任务分支，通过 PR 和 `CI gate` 后合并；一个分支对应一个明确目标，不混入无关修改。
