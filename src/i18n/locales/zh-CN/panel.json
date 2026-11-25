@@ -130,5 +130,15 @@
     "noSummaryPermission": "没有权限查看用户统计数据",
     "summaryReturnedHtml": "用户统计接口返回了网页而不是数据",
     "summaryPageEmpty": "用户统计页返回空内容"
+  },
+  "reader": {
+    "title": "回复阅读",
+    "position": "第 {floor} / {total} 楼",
+    "floor": "第 {floor} 楼",
+    "loading": "等待帖子",
+    "done": "已到末楼 · {floor} 楼",
+    "empty": "暂无回复",
+    "pause": "暂停",
+    "resume": "继续"
   }
 }

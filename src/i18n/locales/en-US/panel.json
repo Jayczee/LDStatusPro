@@ -130,5 +130,15 @@
     "noSummaryPermission": "No permission to view user summary stats",
     "summaryReturnedHtml": "User summary endpoint returned HTML instead of JSON",
     "summaryPageEmpty": "User summary page returned empty content"
+  },
+  "reader": {
+    "title": "Reply reader",
+    "position": "Post {floor} of {total}",
+    "floor": "Post {floor}",
+    "loading": "Waiting for posts",
+    "done": "End · post {floor}",
+    "empty": "No replies",
+    "pause": "Pause",
+    "resume": "Resume"
   }
 }

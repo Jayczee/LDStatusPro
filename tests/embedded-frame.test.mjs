@@ -165,3 +165,52 @@ test('real Chromium: only the top page gets a panel; mini-app, sandboxed and sam
     assert.equal(bridge, 'bridge-check', 'cdk bridge must still answer from inside an iframe');
     assert.deepEqual(errors, []);
 });
+
+test('reply reader follows rendered floors, yields to manual scrolling and stops at the topic end', async t => {
+    const browser = await chromium.launch({ executablePath: resolveChromiumPath() });
+    t.after(() => browser.close());
+    const page = await browser.newPage({ viewport: { width: 1200, height: 640 } });
+    await page.clock.install();
+    await page.addInitScript({ content: `(() => { ${GM_STUBS}\n${source}\n})();` });
+    await page.route('**/*', route => {
+        const url = new URL(route.request().url());
+        if (url.pathname === '/t/example/42') {
+            return route.fulfill({ contentType: 'text/html', body: html(`
+                <section id="topic" data-topic-id="42"><div class="post-stream">
+                <div class="topic-post" data-post-number="1" style="height:560px"></div>
+                <div class="topic-post" data-post-number="2" style="height:760px"></div>
+                </div></section><footer style="height:1200px"></footer>`) });
+        }
+        if (url.pathname === '/t/42.json') {
+            return route.fulfill({ json: { id: 42, highest_post_number: 5, post_stream: { posts: [] } } });
+        }
+        return route.abort();
+    });
+    await page.goto('https://linux.do/t/example/42');
+    const row = page.locator('.ldsp-reply-reader');
+    await row.waitFor({ state: 'attached' });
+    await page.clock.runFor(5200);
+    const offset = () => page.evaluate(() => window.scrollY);
+    assert.ok(await offset() > 0, 'scrolls on the visible topic');
+    await page.evaluate(() => document.body.dispatchEvent(new WheelEvent('wheel', { bubbles: true })));
+    const pausedAt = await offset();
+    await page.clock.runFor(5200);
+    assert.equal(await offset(), pausedAt);
+    await row.locator('button').evaluate(button => button.click());
+    await page.clock.runFor(19000);
+    assert.equal(await row.locator('button').isDisabled(), false, 'waits for virtualized posts');
+    await page.evaluate(() => {
+        document.querySelector('.post-stream').insertAdjacentHTML('beforeend',
+            '<div class="topic-post" data-post-number="5" style="height:800px"></div><div class="post-stream__bottom-boundary"></div>');
+    });
+    await page.clock.runFor(23000);
+    assert.equal(await row.locator('progress').getAttribute('value'), '5');
+    assert.equal(await row.locator('button').isDisabled(), true);
+    const end = await offset();
+    await page.clock.runFor(6000);
+    assert.equal(await offset(), end);
+    await page.evaluate(() => history.pushState(null, '', '/latest'));
+    await page.clock.runFor(700);
+    assert.equal(await row.evaluate(node => node.hidden), true);
+});
+
