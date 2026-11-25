@@ -11,7 +11,7 @@ export function readUserscriptVersion(src) {
 }
 
 export function isReleaseVersion(version) {
-    return /^\d+\.\d+\.\d+(?:\.\d+)?$/.test(version);
+    return /^\d+\.\d+\.\d+(?:\.\d+)?(?:-Jayczee)?$/.test(version);
 }
 
 export function extractReadmeNotes(readme, version) {
@@ -28,46 +28,15 @@ export function extractReadmeNotes(readme, version) {
     return body.join('\n').trim();
 }
 
-export function buildReleaseBody({ version, notes, repository }) {
-    const changelog = notes?.trim()
-        ? notes.trim()
-        : '请查看 [README.md](./README.md) 了解详细更新内容。';
-    const repo = repository || 'caigg188/LDStatusPro';
-    return `## 🎉 v${version} 更新内容
+export function buildReleaseBody({ version, notes, repository = 'Jayczee/LDStatusPro' }) {
+    const installUrl = `https://raw.githubusercontent.com/${repository}/v${version}/LDStatusPro.user.js`;
+    return `**[点击安装 LDStatus Pro](${installUrl})**
 
-${changelog}
+已安装油猴的浏览器会打开安装或更新确认页。
 
----
+## v${version} 更新内容
 
-## 📥 安装方式
-
-### 方式一：直接安装（推荐）
-
-确保已安装脚本管理器，然后点击下方链接：
-
-**[🔗 点击安装 LDStatus Pro](https://raw.githubusercontent.com/${repo}/main/LDStatusPro.user.js)**
-
-### 方式二：从 GreasyFork 安装
-
-访问 [GreasyFork 页面](https://greasyfork.org/zh-CN/scripts/558575-ldstatus-pro) 安装（可能有延迟）
-
----
-
-## 📋 支持的脚本管理器
-
-| 平台 | 脚本管理器 | 状态 |
-|------|-----------|------|
-| Chrome/Edge/Firefox | Tampermonkey | ✅ 完全支持 |
-| Chrome/Edge/Firefox | Violentmonkey | ✅ 完全支持 |
-| Safari (macOS) | Tampermonkey / Userscripts | ✅ 完全支持 |
-| Safari (iOS) | Stay | ✅ 完全支持 |
-
----
-
-## 🔄 如何更新
-
-- **自动更新**: 脚本管理器会定期检查更新（通常 1-24 小时）
-- **手动更新**: 在脚本管理器中点击"检查更新"
+${notes.trim() || '本版脚本已随 Release 附上。'}
 `;
 }
 
@@ -80,7 +49,7 @@ function main() {
         process.exit(1);
     }
     const notes = extractReadmeNotes(fs.readFileSync(path.join(root, 'README.md'), 'utf8'), version);
-    const repository = process.env.GITHUB_REPOSITORY || 'caigg188/LDStatusPro';
+    const repository = process.env.GITHUB_REPOSITORY || 'Jayczee/LDStatusPro';
     process.stdout.write(buildReleaseBody({ version, notes, repository }));
 }
 

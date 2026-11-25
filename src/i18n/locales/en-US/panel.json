@@ -130,5 +130,20 @@
     "noSummaryPermission": "No permission to view user summary stats",
     "summaryReturnedHtml": "User summary endpoint returned HTML instead of JSON",
     "summaryPageEmpty": "User summary page returned empty content"
+  },
+  "reader": {
+    "title": "Background reader",
+    "position": "Post {floor} of {total}",
+    "loading": "Waiting for posts",
+    "done": "Finished at post {floor}",
+    "empty": "No replies",
+    "pause": "Pause",
+    "resume": "Resume",
+    "ready": "First reply queued",
+    "failed": "Read failed. Resume to retry.",
+    "rate": "Time between batches",
+    "interval": "{seconds} s",
+    "batchSize": "Replies per batch",
+    "batchOption": "{count}/batch"
   }
 }
