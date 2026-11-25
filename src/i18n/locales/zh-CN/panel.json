@@ -141,7 +141,9 @@
     "resume": "继续",
     "ready": "等待读取首条回复",
     "failed": "读取失败，可继续重试",
-    "rate": "后台读取速度",
-    "interval": "{seconds} 秒/条"
+    "rate": "每批读取间隔",
+    "interval": "{seconds} 秒",
+    "batchSize": "每批回复条数",
+    "batchOption": "{count} 条/批"
   }
 }

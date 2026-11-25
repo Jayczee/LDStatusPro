@@ -172,14 +172,14 @@ test('background reader advances through API replies independently of the viewpo
     const page = await browser.newPage({ viewport: { width: 1200, height: 640 } });
     await page.clock.install();
     await page.addInitScript({ content: `(() => { ${GM_STUBS.replace('new Map()', "new Map(JSON.parse(sessionStorage.getItem('gm-test') || '[]'))").replace('__store.set(key, value);', "__store.set(key, value); sessionStorage.setItem('gm-test', JSON.stringify([...__store]));")}\n${source}\n})();` });
-    const posts = [1, 2, 4, 18].map(n => ({ id: n, post_number: n, cooked: '<p>Reply ' + n + '</p>' }));
+    const posts = [1, 2, 4, 18, 19, 20, 21, 22, 23, 24, 25].map(n => ({ id: n, post_number: n, cooked: '<p>Reply ' + n + '</p>' }));
     await page.route('**/*', route => {
         const url = new URL(route.request().url());
         if (url.pathname === '/t/example/42') {
             return route.fulfill({ contentType: 'text/html', body: html('<textarea></textarea><section style="height:4000px">manual reading</section>') });
         }
         if (url.pathname === '/t/42.json') {
-            return route.fulfill({ json: { id: 42, highest_post_number: 18, post_stream: { posts: posts.slice(0, 2) } } });
+            return route.fulfill({ json: { id: 42, highest_post_number: 25, post_stream: { posts: posts.slice(0, 2) } } });
         }
         if (url.pathname === '/t/42/posts.json') {
             return route.fulfill({ json: { post_stream: { posts: posts.filter(p => p.post_number > Number(url.searchParams.get('post_number'))) } } });
@@ -189,40 +189,49 @@ test('background reader advances through API replies independently of the viewpo
     await page.goto('https://linux.do/t/example/42');
     const row = page.locator('.ldsp-reply-reader');
     const label = row.locator('.ldsp-reader-position');
-    const rate = row.locator('select');
+    const rate = row.locator('.ldsp-reader-rate');
+    const size = row.locator('.ldsp-reader-batch');
     const pause = () => row.locator('button').evaluate(button => button.click());
+    const change = (select, value) => select.evaluate((node, val) => {
+        node.value = val;
+        node.dispatchEvent(new Event('change'));
+    }, value);
+    const batch = async () => (await label.getAttribute('title') || '').split('\n').filter(Boolean);
     await row.waitFor({ state: 'attached' });
-    assert.equal(await rate.inputValue(), '30');
+    assert.equal(await rate.inputValue(), '5');
+    assert.equal(await size.inputValue(), '3');
     await page.evaluate(() => {
         document.querySelector('textarea').focus();
         window.scrollTo(0, 711);
         Object.defineProperty(document, 'hidden', { configurable: true, value: true });
     });
-    await page.clock.runFor(26000);
-    assert.equal(await label.getAttribute('title'), null);
-    await page.clock.runFor(5000);
-    assert.equal(await label.getAttribute('title'), 'Reply 2');
+    await page.clock.runFor(3500);
+    assert.deepEqual(await batch(), []);
+    await page.clock.runFor(2500);
+    assert.deepEqual(await batch(), ['#2 Reply 2', '#4 Reply 4', '#18 Reply 18']);
     assert.equal(await page.evaluate(() => window.scrollY), 711);
     await page.evaluate(() => {
         window.scrollTo(0, 1210);
         document.body.dispatchEvent(new WheelEvent('wheel', { bubbles: true }));
     });
-    await rate.evaluate(select => { select.value = '10'; select.dispatchEvent(new Event('change')); });
+    await change(rate, '10');
+    await change(size, '5');
     await page.clock.runFor(8000);
-    assert.equal(await label.getAttribute('title'), 'Reply 2');
+    assert.equal((await batch()).at(-1), '#18 Reply 18');
     await page.clock.runFor(3000);
-    assert.equal(await label.getAttribute('title'), 'Reply 4');
+    assert.deepEqual(await batch(), [19, 20, 21, 22, 23].map(n => `#${n} Reply ${n}`));
     await pause();
     await page.clock.runFor(31000);
-    assert.equal(await label.getAttribute('title'), 'Reply 4');
+    assert.equal((await batch()).at(-1), '#23 Reply 23');
     await pause();
     await page.clock.runFor(11000);
-    assert.equal(await label.getAttribute('title'), 'Reply 18');
+    assert.deepEqual(await batch(), ['#24 Reply 24', '#25 Reply 25']);
     assert.equal(await row.locator('button').isDisabled(), true);
     assert.deepEqual(await page.evaluate(() => [window.scrollY, document.activeElement.tagName]), [1210, 'TEXTAREA']);
     await page.reload();
     await row.waitFor({ state: 'attached' });
     assert.equal(await rate.inputValue(), '10');
+    assert.equal(await size.inputValue(), '5');
     await page.evaluate(() => history.pushState(null, '', '/latest'));
     await page.clock.runFor(1500);
     assert.equal(await row.evaluate(node => node.hidden), true);

@@ -956,7 +956,9 @@
     "panel.reader.resume": "6669a6392687fbab",
     "panel.reader.ready": "b5701e9caf098190",
     "panel.reader.failed": "520057bd246aa093",
-    "panel.reader.rate": "48af766224b47b76",
-    "panel.reader.interval": "c4a0537917887c47"
+    "panel.reader.rate": "c643c5d905f8dca7",
+    "panel.reader.interval": "e1f348b049084c86",
+    "panel.reader.batchSize": "934a17a2c10ffe00",
+    "panel.reader.batchOption": "13eb3cd4c0189e70"
   }
 }

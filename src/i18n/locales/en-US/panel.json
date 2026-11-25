@@ -141,7 +141,9 @@
     "resume": "Resume",
     "ready": "First reply queued",
     "failed": "Read failed. Resume to retry.",
-    "rate": "Background reading speed",
-    "interval": "{seconds} s/reply"
+    "rate": "Time between batches",
+    "interval": "{seconds} s",
+    "batchSize": "Replies per batch",
+    "batchOption": "{count}/batch"
   }
 }
