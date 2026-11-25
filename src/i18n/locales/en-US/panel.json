@@ -132,13 +132,16 @@
     "summaryPageEmpty": "User summary page returned empty content"
   },
   "reader": {
-    "title": "Reply reader",
+    "title": "Background reader",
     "position": "Post {floor} of {total}",
-    "floor": "Post {floor}",
     "loading": "Waiting for posts",
-    "done": "End · post {floor}",
+    "done": "Finished at post {floor}",
     "empty": "No replies",
     "pause": "Pause",
-    "resume": "Resume"
+    "resume": "Resume",
+    "ready": "First reply queued",
+    "failed": "Read failed. Resume to retry.",
+    "rate": "Background reading speed",
+    "interval": "{seconds} s/reply"
   }
 }

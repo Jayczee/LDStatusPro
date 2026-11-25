@@ -132,13 +132,16 @@
     "summaryPageEmpty": "用户统计页返回空内容"
   },
   "reader": {
-    "title": "回复阅读",
+    "title": "后台阅读",
     "position": "第 {floor} / {total} 楼",
-    "floor": "第 {floor} 楼",
     "loading": "等待帖子",
-    "done": "已到末楼 · {floor} 楼",
+    "done": "已读完 · 第 {floor} 楼",
     "empty": "暂无回复",
     "pause": "暂停",
-    "resume": "继续"
+    "resume": "继续",
+    "ready": "等待读取首条回复",
+    "failed": "读取失败，可继续重试",
+    "rate": "后台读取速度",
+    "interval": "{seconds} 秒/条"
   }
 }

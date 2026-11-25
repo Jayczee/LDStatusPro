@@ -947,13 +947,16 @@
     "panel.toasts.forumLoginRequired": "0dd7795e3ec886c1",
     "panel.toasts.loginRequestFailed": "ee60336059661718",
     "common.errors.possibleIpBlock": "0e4d1d6ae1d133fe",
-    "panel.reader.title": "54a778e97542ff1f",
+    "panel.reader.title": "750b7039206ca00e",
     "panel.reader.position": "1be71b9c6bd30779",
-    "panel.reader.floor": "28eded6fd3fc445f",
     "panel.reader.loading": "34f067b2505c1ae8",
-    "panel.reader.done": "70f15c44a23a6eee",
+    "panel.reader.done": "c82fd4861837936a",
     "panel.reader.empty": "78cbc62856732caa",
     "panel.reader.pause": "e70c528608045a71",
-    "panel.reader.resume": "6669a6392687fbab"
+    "panel.reader.resume": "6669a6392687fbab",
+    "panel.reader.ready": "b5701e9caf098190",
+    "panel.reader.failed": "520057bd246aa093",
+    "panel.reader.rate": "48af766224b47b76",
+    "panel.reader.interval": "c4a0537917887c47"
   }
 }

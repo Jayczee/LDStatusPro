@@ -166,51 +166,64 @@ test('real Chromium: only the top page gets a panel; mini-app, sandboxed and sam
     assert.deepEqual(errors, []);
 });
 
-test('reply reader follows rendered floors, yields to manual scrolling and stops at the topic end', async t => {
+test('background reader advances through API replies independently of the viewport at the saved speed', async t => {
     const browser = await chromium.launch({ executablePath: resolveChromiumPath() });
     t.after(() => browser.close());
     const page = await browser.newPage({ viewport: { width: 1200, height: 640 } });
     await page.clock.install();
-    await page.addInitScript({ content: `(() => { ${GM_STUBS}\n${source}\n})();` });
+    await page.addInitScript({ content: `(() => { ${GM_STUBS.replace('new Map()', "new Map(JSON.parse(sessionStorage.getItem('gm-test') || '[]'))").replace('__store.set(key, value);', "__store.set(key, value); sessionStorage.setItem('gm-test', JSON.stringify([...__store]));")}\n${source}\n})();` });
+    const posts = [1, 2, 4, 18].map(n => ({ id: n, post_number: n, cooked: '<p>Reply ' + n + '</p>' }));
     await page.route('**/*', route => {
         const url = new URL(route.request().url());
         if (url.pathname === '/t/example/42') {
-            return route.fulfill({ contentType: 'text/html', body: html(`
-                <section id="topic" data-topic-id="42"><div class="post-stream">
-                <div class="topic-post" data-post-number="1" style="height:560px"></div>
-                <div class="topic-post" data-post-number="2" style="height:760px"></div>
-                </div></section><footer style="height:1200px"></footer>`) });
+            return route.fulfill({ contentType: 'text/html', body: html('<textarea></textarea><section style="height:4000px">manual reading</section>') });
         }
         if (url.pathname === '/t/42.json') {
-            return route.fulfill({ json: { id: 42, highest_post_number: 5, post_stream: { posts: [] } } });
+            return route.fulfill({ json: { id: 42, highest_post_number: 18, post_stream: { posts: posts.slice(0, 2) } } });
+        }
+        if (url.pathname === '/t/42/posts.json') {
+            return route.fulfill({ json: { post_stream: { posts: posts.filter(p => p.post_number > Number(url.searchParams.get('post_number'))) } } });
         }
         return route.abort();
     });
     await page.goto('https://linux.do/t/example/42');
     const row = page.locator('.ldsp-reply-reader');
+    const label = row.locator('.ldsp-reader-position');
+    const rate = row.locator('select');
+    const pause = () => row.locator('button').evaluate(button => button.click());
     await row.waitFor({ state: 'attached' });
-    await page.clock.runFor(5200);
-    const offset = () => page.evaluate(() => window.scrollY);
-    assert.ok(await offset() > 0, 'scrolls on the visible topic');
-    await page.evaluate(() => document.body.dispatchEvent(new WheelEvent('wheel', { bubbles: true })));
-    const pausedAt = await offset();
-    await page.clock.runFor(5200);
-    assert.equal(await offset(), pausedAt);
-    await row.locator('button').evaluate(button => button.click());
-    await page.clock.runFor(19000);
-    assert.equal(await row.locator('button').isDisabled(), false, 'waits for virtualized posts');
+    assert.equal(await rate.inputValue(), '30');
     await page.evaluate(() => {
-        document.querySelector('.post-stream').insertAdjacentHTML('beforeend',
-            '<div class="topic-post" data-post-number="5" style="height:800px"></div><div class="post-stream__bottom-boundary"></div>');
+        document.querySelector('textarea').focus();
+        window.scrollTo(0, 711);
+        Object.defineProperty(document, 'hidden', { configurable: true, value: true });
     });
-    await page.clock.runFor(23000);
-    assert.equal(await row.locator('progress').getAttribute('value'), '5');
+    await page.clock.runFor(26000);
+    assert.equal(await label.getAttribute('title'), null);
+    await page.clock.runFor(5000);
+    assert.equal(await label.getAttribute('title'), 'Reply 2');
+    assert.equal(await page.evaluate(() => window.scrollY), 711);
+    await page.evaluate(() => {
+        window.scrollTo(0, 1210);
+        document.body.dispatchEvent(new WheelEvent('wheel', { bubbles: true }));
+    });
+    await rate.evaluate(select => { select.value = '10'; select.dispatchEvent(new Event('change')); });
+    await page.clock.runFor(8000);
+    assert.equal(await label.getAttribute('title'), 'Reply 2');
+    await page.clock.runFor(3000);
+    assert.equal(await label.getAttribute('title'), 'Reply 4');
+    await pause();
+    await page.clock.runFor(31000);
+    assert.equal(await label.getAttribute('title'), 'Reply 4');
+    await pause();
+    await page.clock.runFor(11000);
+    assert.equal(await label.getAttribute('title'), 'Reply 18');
     assert.equal(await row.locator('button').isDisabled(), true);
-    const end = await offset();
-    await page.clock.runFor(6000);
-    assert.equal(await offset(), end);
+    assert.deepEqual(await page.evaluate(() => [window.scrollY, document.activeElement.tagName]), [1210, 'TEXTAREA']);
+    await page.reload();
+    await row.waitFor({ state: 'attached' });
+    assert.equal(await rate.inputValue(), '10');
     await page.evaluate(() => history.pushState(null, '', '/latest'));
-    await page.clock.runFor(700);
+    await page.clock.runFor(1500);
     assert.equal(await row.evaluate(node => node.hidden), true);
 });
-
